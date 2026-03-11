@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>NAAMU – Shop Ledger</title>
+  <meta name="description" content="NAAMU – Udhar ledger for shop owners and customers. Multi-shop support." />
+  <meta name="theme-color" content="#0f766e" />
+
+  <!-- PWA -->
+  <link rel="manifest" href="/manifest.json" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="NAAMU" />
+  <link rel="apple-touch-icon" href="/icons/icon-192.png" />
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
+
+  <link rel="stylesheet" href="/styles/main.css" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+</head>
+<body>
+<div id="app">
+
+<!-- ══ SCREEN: HOME ════════════════════════════════════════════════════════ -->
+<section id="screen-home" class="screen active">
+  <div style="min-height:100vh;display:flex;flex-direction:column;background:linear-gradient(160deg,#0f766e 0%,#134e4a 55%,#0a3d38 100%);">
+    <!-- Branding -->
+    <div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:40px 24px 20px;">
+      <div style="font-size:5rem;margin-bottom:6px;">📒</div>
+      <div style="font-size:3rem;font-weight:900;color:white;letter-spacing:0.12em;">NAAMU</div>
+      <div style="font-size:0.85rem;color:rgba(255,255,255,0.7);margin-top:4px;letter-spacing:0.12em;text-transform:uppercase;">Your Shop Ledger</div>
+      <div style="color:rgba(255,255,255,0.55);font-size:0.82rem;margin-top:16px;text-align:center;line-height:1.6;">
+        Track udhar. Record payments.<br />Let customers check their balance.
+      </div>
+    </div>
+
+    <!-- Choice cards -->
+    <div style="padding:0 20px 40px;">
+      <button class="home-choice-btn" onclick="goTo('owner-login')">
+        <span style="font-size:2rem;">🏪</span>
+        <div>
+          <div style="font-weight:800;font-size:1rem;">I'm a Shop Owner</div>
+          <div style="font-size:0.78rem;opacity:0.8;margin-top:2px;">Manage customers & transactions</div>
+        </div>
+        <span style="margin-left:auto;font-size:1.2rem;opacity:0.7;">›</span>
+      </button>
+
+      <button class="home-choice-btn" style="margin-top:12px;background:rgba(255,255,255,0.12);" onclick="goTo('customer-lookup')">
+        <span style="font-size:2rem;">👤</span>
+        <div>
+          <div style="font-weight:800;font-size:1rem;">I'm a Customer</div>
+          <div style="font-size:0.78rem;opacity:0.8;margin-top:2px;">View my outstanding balance</div>
+        </div>
+        <span style="margin-left:auto;font-size:1.2rem;opacity:0.7;">›</span>
+      </button>
+
+      <div style="text-align:center;margin-top:20px;">
+        <button class="link-btn" onclick="goTo('register-shop')">New shop? Register here →</button>
+      </div>
+
+      <!-- Credit -->
+      <div style="text-align:center;margin-top:28px;padding-top:20px;border-top:1px solid rgba(255,255,255,0.12);">
+        <div style="font-size:0.7rem;color:rgba(255,255,255,0.4);letter-spacing:0.06em;text-transform:uppercase;">Designed &amp; Developed by</div>
+        <div style="font-size:0.92rem;font-weight:800;color:rgba(255,255,255,0.75);margin-top:4px;letter-spacing:0.04em;">Om Solanki</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ SCREEN: REGISTER SHOP ══════════════════════════════════════════════ -->
+<section id="screen-register-shop" class="screen">
+  <div class="header">
+    <div class="header-row">
+      <button class="back-btn" onclick="goTo('home')">←</button>
+      <div><div class="header-title">Register Your Shop</div>
+           <div class="header-subtitle">One-time setup</div></div>
+    </div>
+  </div>
+  <div class="scroll-content">
+    <div style="text-align:center;padding:20px 0 8px;">
+      <div style="font-size:3rem;">🏪</div>
+      <div style="font-size:0.85rem;color:var(--text-muted);margin-top:6px;line-height:1.5;">
+        Register once. You'll get a unique<br /><strong>Shop Code</strong> to share with customers.
+      </div>
+    </div>
+    <div class="card" style="margin-top:16px">
+      <div class="form-group">
+        <label class="form-label" for="reg-name">Shop Name</label>
+        <input class="form-input" id="reg-name" type="text" placeholder="e.g. Ramesh General Store" maxlength="60" autocomplete="off"/>
+        <div class="form-error" id="reg-name-err"></div>
+      </div>
+      <div class="form-group">
+        <label class="form-label" for="reg-pin">Set a PIN (4–6 digits)</label>
+        <input class="form-input" id="reg-pin" type="password" inputmode="numeric" placeholder="e.g. 1234" maxlength="6" />
+        <div style="font-size:0.75rem;color:var(--text-muted);margin-top:4px;">Remember this PIN — you'll use it to log in</div>
+        <div class="form-error" id="reg-pin-err"></div>
+      </div>
+      <button class="btn btn-primary mt-16" id="reg-btn" onclick="registerShop()">🚀 Create My Shop</button>
+    </div>
+  </div>
+</section>
+
+<!-- ══ SCREEN: SHOP CODE SUCCESS ═════════════════════════════════════════ -->
+<section id="screen-shop-created" class="screen">
+  <div class="scroll-content" style="display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;text-align:center;padding:40px 24px;">
+    <div style="font-size:4rem;margin-bottom:12px;">🎉</div>
+    <div style="font-size:1.3rem;font-weight:900;color:var(--text);">Shop Registered!</div>
+    <div style="font-size:0.88rem;color:var(--text-muted);margin-top:8px;line-height:1.6;" id="success-shop-name-msg">Your shop is ready.</div>
+
+    <div style="background:linear-gradient(135deg,var(--primary),var(--primary-light));border-radius:var(--radius);padding:28px 24px;margin:28px 0;width:100%;max-width:320px;color:white;box-shadow:var(--shadow-lg);">
+      <div style="font-size:0.75rem;opacity:0.8;text-transform:uppercase;letter-spacing:0.1em;margin-bottom:8px;">Your Shop Code</div>
+      <div id="created-shop-code" style="font-size:2.6rem;font-weight:900;letter-spacing:0.12em;">—</div>
+      <div style="font-size:0.78rem;opacity:0.75;margin-top:10px;line-height:1.5;">Share this code with customers so they can view their balance</div>
+    </div>
+
+    <div style="background:#fef3c7;border-radius:var(--radius-sm);padding:14px 16px;width:100%;max-width:320px;text-align:left;margin-bottom:24px;">
+      <div style="font-weight:800;font-size:0.85rem;color:#92400e;">📌 Important</div>
+      <div style="font-size:0.78rem;color:#78350f;margin-top:4px;line-height:1.5;">Save your Shop Code and PIN. You will need both to log in as the owner.</div>
+    </div>
+
+    <button class="btn btn-primary" style="max-width:320px;width:100%" onclick="proceedFromSetup()">✅ Go to Dashboard</button>
+  </div>
+</section>
+
+<!-- ══ SCREEN: OWNER LOGIN ════════════════════════════════════════════════ -->
+<section id="screen-owner-login" class="screen">
+  <div class="header">
+    <div class="header-row">
+      <button class="back-btn" onclick="goTo('home')">←</button>
+      <div><div class="header-title">Owner Login</div>
+           <div class="header-subtitle">Enter your shop credentials</div></div>
+    </div>
+  </div>
+  <div class="scroll-content">
+    <div style="text-align:center;padding:20px 0 8px;">
+      <div style="font-size:3rem;">🔑</div>
+    </div>
+    <div class="card" style="margin-top:12px">
+      <div class="form-group">
+        <label class="form-label" for="login-code">Shop Code</label>
+        <input class="form-input" id="login-code" type="text" placeholder="e.g. NAM-4821"
+               maxlength="8" autocomplete="off" style="text-transform:uppercase;letter-spacing:0.08em;"
+               oninput="this.value=this.value.toUpperCase()" />
+        <div class="form-error" id="login-code-err"></div>
+      </div>
+      <div class="form-group">
+        <label class="form-label" for="login-pin">PIN</label>
+        <input class="form-input" id="login-pin" type="password" inputmode="numeric"
+               placeholder="Your 4–6 digit PIN" maxlength="6"
+               onkeydown="if(event.key==='Enter') ownerLogin()" />
+        <div class="form-error" id="login-pin-err"></div>
+      </div>
+      <button class="btn btn-primary mt-16" id="login-btn" onclick="ownerLogin()">🏪 Login to Dashboard</button>
+      <div style="text-align:center;margin-top:16px;">
+        <button class="link-btn" onclick="goTo('register-shop')">Don't have a shop? Register →</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ SCREEN: OWNER DASHBOARD ═══════════════════════════════════════════ -->
+<section id="screen-dashboard" class="screen">
+  <div class="header">
+    <div class="header-row">
+      <div style="flex:1;min-width:0;">
+        <div class="header-title">📒 NAAMU</div>
+        <div class="header-subtitle" id="dashboard-shop-name">My Shop</div>
+      </div>
+      <div class="shop-code-badge" id="dashboard-shop-code">—</div>
+      <button class="back-btn" style="margin-left:8px" title="Logout" onclick="ownerLogout()">⎋</button>
+    </div>
+    <div class="stats-banner">
+      <div class="stat-item"><div class="stat-label">Customers</div><div class="stat-value" id="stat-customers">—</div></div>
+      <div class="stat-item"><div class="stat-label">Total Udhar</div><div class="stat-value" id="stat-udhar">—</div></div>
+      <div class="stat-item"><div class="stat-label">Outstanding</div><div class="stat-value" id="stat-outstanding">—</div></div>
+    </div>
+  </div>
+  <div class="scroll-content">
+    <div class="search-wrap">
+      <span class="search-icon">🔍</span>
+      <input type="text" id="search-input" placeholder="Search by name or phone…" autocomplete="off" />
+    </div>
+    <div class="section-label" id="customer-count-label">All Customers</div>
+    <div class="customer-list" id="customer-list"><div class="spinner"></div></div>
+  </div>
+  <button class="fab" title="Add Customer" onclick="showAddCustomer()">＋</button>
+</section>
+
+<!-- ══ SCREEN: ADD CUSTOMER ════════════════════════════════════════════════ -->
+<section id="screen-add-customer" class="screen">
+  <div class="header">
+    <div class="header-row">
+      <button class="back-btn" onclick="goTo('dashboard')">←</button>
+      <div><div class="header-title">Add New Customer</div>
+           <div class="header-subtitle">Enter customer details</div></div>
+    </div>
+  </div>
+  <div class="scroll-content">
+    <div class="card">
+      <div class="form-group">
+        <label class="form-label" for="c-name">Customer Name</label>
+        <input class="form-input" id="c-name" type="text" placeholder="e.g. Ramesh Kumar" autocomplete="off"/>
+        <div class="form-error" id="c-name-err"></div>
+      </div>
+      <div class="form-group">
+        <label class="form-label" for="c-phone">Phone Number</label>
+        <input class="form-input" id="c-phone" type="tel" placeholder="10-digit mobile number" maxlength="10"/>
+        <div class="form-error" id="c-phone-err"></div>
+      </div>
+      <button class="btn btn-primary mt-16" id="save-customer-btn" onclick="saveCustomer()">✅ Save Customer</button>
+    </div>
+  </div>
+</section>
+
+<!-- ══ SCREEN: CUSTOMER LEDGER (OWNER) ════════════════════════════════════ -->
+<section id="screen-ledger" class="screen">
+  <div class="header">
+    <div class="header-row">
+      <button class="back-btn" onclick="goTo('dashboard')">←</button>
+      <div style="flex:1"><div class="header-title" id="ledger-customer-name">Customer</div>
+                          <div class="header-subtitle" id="ledger-customer-phone">—</div></div>
+      <button class="export-btn" onclick="exportPDF()">📄 PDF</button>
+    </div>
+  </div>
+  <div class="scroll-content">
+    <div class="balance-card">
+      <div class="balance-label">Total Outstanding (Udhar)</div>
+      <div class="balance-amount" id="ledger-balance">₹0</div>
+      <div class="balance-row">
+        <div class="balance-sub"><div class="balance-sub-label">📈 Total Credit</div><div class="balance-sub-val" id="ledger-credit">₹0</div></div>
+        <div class="balance-sub"><div class="balance-sub-label">📉 Total Paid</div><div class="balance-sub-val" id="ledger-debit">₹0</div></div>
+      </div>
+    </div>
+    <div class="btn-row mb-16">
+      <button class="btn btn-credit btn-sm" onclick="showAddTransaction('credit')">➕ Add Udhar</button>
+      <button class="btn btn-debit btn-sm" onclick="showAddTransaction('debit')">💰 Add Payment</button>
+    </div>
+    <div class="filter-bar">
+      <button class="filter-chip active" data-filter="all" onclick="setFilter('all',this)">All</button>
+      <button class="filter-chip" data-filter="credit" onclick="setFilter('credit',this)">Udhar</button>
+      <button class="filter-chip" data-filter="debit" onclick="setFilter('debit',this)">Payments</button>
+    </div>
+    <div class="date-filter-row">
+      <input type="date" id="filter-from" onchange="applyFilters()"/>
+      <span style="color:var(--text-muted);font-size:0.8rem;">to</span>
+      <input type="date" id="filter-to" onchange="applyFilters()"/>
+      <button class="export-btn" style="padding:7px 10px" onclick="clearDateFilter()">✕</button>
+    </div>
+    <div class="section-label" id="tx-count-label">Transactions</div>
+    <div class="tx-list" id="tx-list"><div class="spinner"></div></div>
+    <div style="margin-top:28px;padding-top:16px;border-top:1px solid var(--border);">
+      <button class="btn btn-ghost" onclick="deleteCustomer()">🗑️ Delete Customer</button>
+    </div>
+  </div>
+</section>
+
+<!-- ══ SCREEN: ADD TRANSACTION ════════════════════════════════════════════ -->
+<section id="screen-add-tx" class="screen">
+  <div class="header">
+    <div class="header-row">
+      <button class="back-btn" onclick="goTo('ledger')">←</button>
+      <div><div class="header-title" id="add-tx-title">Add Transaction</div>
+           <div class="header-subtitle" id="add-tx-subtitle">—</div></div>
+    </div>
+  </div>
+  <div class="scroll-content">
+    <div class="card">
+      <div class="form-group">
+        <div class="form-label">Transaction Type</div>
+        <div class="type-toggle">
+          <button class="type-btn credit active" id="type-credit-btn" onclick="selectType('credit')">➕ Udhar</button>
+          <button class="type-btn debit" id="type-debit-btn" onclick="selectType('debit')">💰 Payment</button>
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label" for="tx-amount">Amount (₹)</label>
+        <input class="form-input" id="tx-amount" type="number" placeholder="Enter amount" min="0.01" step="0.01"/>
+        <div class="form-error" id="tx-amount-err"></div>
+      </div>
+      <div class="form-group">
+        <label class="form-label" for="tx-note">Note (optional)</label>
+        <input class="form-input" id="tx-note" type="text" placeholder="e.g. Rice 5kg, monthly payment…"/>
+      </div>
+      <div class="form-error" id="tx-global-err"></div>
+      <button class="btn btn-primary mt-16" id="save-tx-btn" onclick="saveTransaction()">✅ Save Transaction</button>
+    </div>
+  </div>
+</section>
+
+<!-- ══ SCREEN: CUSTOMER LOOKUP ════════════════════════════════════════════ -->
+<section id="screen-customer-lookup" class="screen">
+  <div class="header">
+    <div class="header-row">
+      <button class="back-btn" onclick="goTo('home')">←</button>
+      <div><div class="header-title">📒 NAAMU</div>
+           <div class="header-subtitle">Check Your Khata</div></div>
+    </div>
+  </div>
+  <div class="scroll-content">
+    <div style="text-align:center;padding:24px 0 16px;">
+      <div style="font-size:3.5rem;">📱</div>
+      <div style="font-size:1.1rem;font-weight:800;margin-top:8px;">View Your Balance</div>
+      <div style="font-size:0.82rem;color:var(--text-muted);margin-top:6px;line-height:1.6;">
+        Enter the <strong>Shop Code</strong> (get it from your shopkeeper)<br/>and your phone number.
+      </div>
+    </div>
+    <div class="card">
+      <div class="form-group">
+        <label class="form-label" for="cl-shop-code">Shop Code</label>
+        <input class="form-input" id="cl-shop-code" type="text" placeholder="e.g. NAM-4821"
+               maxlength="8" autocomplete="off" style="text-transform:uppercase;letter-spacing:0.08em;font-weight:700;"
+               oninput="this.value=this.value.toUpperCase()" />
+        <div class="form-error" id="cl-shop-err"></div>
+      </div>
+      <div class="form-group">
+        <label class="form-label" for="cl-phone">Your Phone Number</label>
+        <input class="form-input" id="cl-phone" type="tel" placeholder="10-digit mobile number"
+               maxlength="10" autocomplete="tel"
+               onkeydown="if(event.key==='Enter') customerLookup()" />
+        <div class="form-error" id="cl-phone-err"></div>
+      </div>
+      <button class="btn btn-primary" onclick="customerLookup()">🔍 View My Khata</button>
+    </div>
+    <div style="text-align:center;margin-top:24px;padding-bottom:8px;">
+      <div style="font-size:0.68rem;color:var(--text-muted);">Designed &amp; Developed by <strong>Om Solanki</strong></div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ SCREEN: CUSTOMER LEDGER (READ-ONLY) ════════════════════════════════ -->
+<section id="screen-customer-view" class="screen">
+  <div class="header">
+    <div class="header-row">
+      <button class="back-btn" onclick="goTo('customer-lookup')">←</button>
+      <div><div class="header-title" id="cv-name">My Khata</div>
+           <div class="header-subtitle" id="cv-phone">—</div></div>
+      <button class="export-btn" onclick="exportCustomerPDF()">📄 PDF</button>
+    </div>
+  </div>
+  <div class="scroll-content">
+    <div class="store-card">
+      <div class="store-icon">🏪</div>
+      <div>
+        <div class="store-name" id="cv-shop-name">Shop</div>
+        <div class="store-tagline" id="cv-date">—</div>
+      </div>
+    </div>
+    <div class="balance-card" style="margin-bottom:16px">
+      <div class="balance-label">Your Outstanding Balance</div>
+      <div class="balance-amount" id="cv-balance">₹0</div>
+      <div class="balance-row">
+        <div class="balance-sub"><div class="balance-sub-label">Total Udhar</div><div class="balance-sub-val" id="cv-credit">₹0</div></div>
+        <div class="balance-sub"><div class="balance-sub-label">Total Paid</div><div class="balance-sub-val" id="cv-debit">₹0</div></div>
+      </div>
+    </div>
+    <div class="section-label">Transaction History</div>
+    <div class="tx-list" id="cv-tx-list"><div class="spinner"></div></div>
+    <div style="text-align:center;margin-top:24px;padding-bottom:8px;">
+      <div style="font-size:0.68rem;color:var(--text-muted);">Powered by <strong>NAAMU</strong> · Designed &amp; Developed by <strong>Om Solanki</strong></div>
+    </div>
+  </div>
+</section>
+
+</div><!-- /#app -->
+<div id="toast"></div>
+<script src="/app.js"></script>
+
+<!-- Register Service Worker -->
+<script>
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('/sw.js')
+        .then(r => console.log('✅ SW registered:', r.scope))
+        .catch(e => console.log('SW error:', e));
+    });
+  }
+</script>
+</body>
+</html>
